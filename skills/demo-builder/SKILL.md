@@ -1,6 +1,6 @@
 ---
 name: demo-builder
-description: Generate PNG mockups of Pipefy screens from a plain-language intent. Use when the user types /demo-builder "<intent>" [template...] [desktop|tablet|mobile], or asks for a Pipefy map, board, card, portal, dashboard or interface screenshot, mockup, or PNG for a slide. Reads the available models from a Demo Builder server, lets the user pick which ones to build, writes the template data itself, shows a short summary to confirm or correct, renders it and shoots a PNG with headless Chrome. A build that includes the card shoots it once per phase of the board, as the studio does.
+description: Generate PNG mockups of Pipefy screens from a plain-language intent. Use when the user types /demo-builder "<intent>" [template...] [desktop|tablet|mobile], or asks for a Pipefy map, board, card, portal, dashboard or interface screenshot, mockup, or PNG for a slide. Reads the available models from a Demo Builder server and builds all of them when the user names none, writes the template data itself, shows a short summary to confirm or correct, renders it and shoots a PNG with headless Chrome. A build that includes the card shoots it once per phase of the board, as the studio does.
 ---
 
 # Demo Builder
@@ -16,9 +16,11 @@ Turn an intent into PNGs of Pipefy screens. You write the template data, a Demo 
   that over any list written here. At the time of writing the server serves `map`, `kanban`,
   `card`, `portal`, `dashboards`, `interfaces` and `agents`.
 
-  **When the user names no template, ask** (step 2). Do not guess a set: the models on the
-  server outnumber what any one demo needs, and a run of nine screens nobody asked for is
-  nine screens of data to check.
+  **When the user names no template, build EVERY model the server returned** (step 2). An
+  intent on its own, `/demo-builder "esteira de crédito"`, is the whole process: the map, the
+  portal, the board, the card walked phase by phase, the dashboards, the interfaces and the
+  agent. Do not ask which ones and do not curate a subset. Step 4 is where the user corrects
+  it, with something concrete in front of them.
 
   **`card` is a walkthrough, not one screen.** Whenever the build includes the card, which is
   what "um pipe e o card" means, it is shot once per phase of the board that has cards, one PNG
@@ -34,9 +36,9 @@ Turn an intent into PNGs of Pipefy screens. You write the template data, a Demo 
   the file, four PNGs. See "The interface has four layouts" below.
 - **device**: `desktop` (default, 1440x960), `tablet` (834x1112), `mobile` (390x844).
 
-Anything unparsed in the arguments is the intent. Beyond which models to build, do not ask
-anything before writing the data: pick sensible values for whatever the arguments leave open.
-The other question comes later, in step 4, once there is something concrete to react to.
+Anything unparsed in the arguments is the intent. Do not ask anything before writing the data:
+pick sensible values for whatever the arguments leave open. The one question comes later, in
+step 4, once there is something concrete to react to.
 
 ## Requirements
 
@@ -109,41 +111,27 @@ The other question comes later, in step 4, once there is something concrete to r
    say so and stop. There is nothing to render against, and inventing a screen without the
    templates defeats the point.
 
-2. **Let the user pick what to build**, when the arguments named no template. Print the
-   models the server just gave you, one per line, with the label and the hint so the choice
-   is informed:
+2. **Take the whole process**, when the arguments named no template. Say it in one line, naming
+   the models the server just returned and the count they come to, and go straight on to the
+   data:
 
    ```
-   Models disponíveis
-
-   1. Map                os objetos da conta (pipes, databases, portais) e como se conectam
-   2. Kanban             o board: fases e cards
-   3. Card               o detalhe de um card, como modal sobre o próprio board
-   4. Portal             o portal do solicitante
-   5. Dashboards         gráficos e indicadores do processo
-   6. Interfaces         a interface publicada, 4 telas
-   7. Agents             o agente sendo configurado, 3 etapas
+   Processo completo: map, kanban, card, portal, dashboards, interfaces e agents.
+   Cerca de 16 views num arquivo só.
    ```
 
-   A line that builds more than one screen says how many, the way Interfaces and Agents do
-   above: asked what they want, nobody answers "Interfaces - B".
-
-   Then ask with `AskUserQuestion`, `multiSelect: true`, so several models come back from one
-   question. The tool takes at most 4 options per question, so split the models the server
-   returned into chunks of 4 and ask one question per chunk, in the server's order. Offer
-   `Processo completo` as the first option of the first question, since it is the common
-   answer. The user can also answer with numbers from the list.
-
-   **`Processo completo` is EVERY model the server returned.** Not a curated subset, and not the
+   **The whole process is EVERY model the server returned.** Not a curated subset, and not the
    three or four that a demo usually opens with: whatever came back from `/api/templates` goes
    into the file, all of it, each one written with the same care as if it had been asked for
-   alone. Do not narrow the set while writing the data, and do not name a shorter one in the
-   option's label: the label is those two words, and the description says how many screens it
-   comes to, counted from the models the server listed and the phases of the board you are
-   about to write. On seven models and a five-phase board that is around 16 PNGs, and step 4 is
-   where the count is said out loud before anything is shot.
+   alone. Do not narrow the set while writing the data. On seven models and a five-phase board
+   that is around 16 PNGs, counted from the models the server listed and the phases of the
+   board you are about to write.
 
-   With the models named in the arguments, skip this step entirely.
+   **Do not ask which models to build.** The question costs the user a decision they have no
+   basis for making yet, and the answer they would give is the whole process anyway. Step 4
+   shows the summary and takes the correction, which is a better moment to drop a screen: by
+   then there is something to react to. A user who does name templates in the arguments gets
+   exactly those.
 
 3. **Write ONE file for everything the prompt asked for**, e.g. `demo-<slug>.json`. Every screen
    goes under `screens`, keyed by name, and a screen that embeds another one references it with
@@ -187,8 +175,8 @@ The other question comes later, in step 4, once there is something concrete to r
    phase or amount moves between two personas' boards is the error a reader catches first.
 
    **"O processo, para o diretor e o analista" is the whole process, and only some of it repeats
-   per persona.** Everything the prompt implies goes in the file, which is the same set
-   `Processo completo` means in step 2: the map, the portal, the interface builder, the
+   per persona.** Everything the prompt implies goes in the file, which is the same set step 2
+   builds from an intent alone: the map, the portal, the interface builder, the
    interfaces, the board, the dashboards, the agent's three steps and the card walked phase by
    phase. Then:
 
@@ -262,9 +250,11 @@ The other question comes later, in step 4, once there is something concrete to r
    abrir os cards de qualquer fase, ou o card completo`. Print a table only when the user asks
    for one, and only for what they asked about.
 
-   Then ask, with `AskUserQuestion`, whether to shoot it or change something. Apply whatever the
-   user asks for and shoot: show the summary again only when the change was broad enough that it
-   is a different process.
+   Then ask, with `AskUserQuestion`, whether to shoot it or change something. Dropping a screen
+   is one of the changes: the header line says how many views the process came to, so a user who
+   only wanted the board says so here and the rest never gets shot. Apply whatever the user asks
+   for and shoot: show the summary again only when the change was broad enough that it is a
+   different process.
 
 5. **Shoot it** with the script that sits next to this file. A process file takes one slug,
    and the PNGs come out as `<slug>-<key>.png`, the key being the screen's name in the file, so
@@ -451,7 +441,7 @@ three-view run unless you say otherwise. Name the scope out loud, in singular wh
 singular:
 
 - Before step 3, one line: `Gerando 1 view: kanban` or `Gerando 3 views do mesmo processo:
-  map, kanban, card`. Never announce more views than were picked.
+  map, kanban, card`. Never announce more views than are being built.
 - Count the card's phases in that line, since one entry in the file is several PNGs: `Gerando 6
   views: map e o card aberto nas 5 fases`. The number of phases is yours to know, you wrote the
   board. The agent counts the same way: one entry is `3 views: o agente nas 3 etapas`.
@@ -504,7 +494,7 @@ The template's own `promptGuide` (step 1) governs. Beyond it:
 - **Map: one link per pair.** Two edges between the same two objects land on the same curve
   and read as one, so a cycle (a blocked task going back into execution) does not show. Say
   it with one edge, or move one of the two objects to another column.
-- **One process across the views.** Whatever set the user picked, the screens are views of the
+- **One process across the views.** Whatever set is being built, the screens are views of the
   same operation: the same pipe name, the same people, the same cards where they overlap. A
   dashboard whose numbers contradict the board next to it is the one error a reader always
   catches.

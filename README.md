@@ -24,9 +24,9 @@ studio. O token fica em `~/.config/demo-builder/credentials.json` e vale 90 dias
 /demo-builder "<intenção>" [template ...] [desktop|tablet|mobile]
 ```
 
-A intenção é o assunto das telas, em uma frase. Sem template nomeado, o skill pergunta quais
-construir, em vez de chutar um conjunto. O dispositivo é `desktop` por padrão, 1440x960, com
-`tablet` em 834x1112 e `mobile` em 390x844.
+A intenção é o assunto das telas, em uma frase. Sem template nomeado, o skill constrói o
+processo inteiro, com todos os models que o servidor oferece, sem perguntar. O dispositivo é
+`desktop` por padrão, 1440x960, com `tablet` em 834x1112 e `mobile` em 390x844.
 
 Antes de renderizar, o skill mostra um resumo do que escreveu para você confirmar ou corrigir.
 Os PNGs saem em `Demo Builder`, na sua Área de Trabalho.
