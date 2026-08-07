@@ -2,7 +2,7 @@
 
 Skill do Claude Code que transforma uma intenção em PNGs de telas do Pipefy. Você descreve o
 processo em uma frase, o Claude escreve os dados do template, o servidor do Demo Builder
-renderiza e o Chrome headless fotografa.
+renderiza e o Chrome headless tira o screenshot.
 
 Este repositório distribui apenas o skill. O studio que renderiza as telas vive em outro lugar
 e já está publicado em https://pipe-screen-studio.vercel.app, então não há nada para rodar
@@ -21,17 +21,69 @@ studio. O token fica em `~/.config/demo-builder/credentials.json` e vale 90 dias
 ## Uso
 
 ```
-/demo-builder "empresa de blindagem de veículos"
-/demo-builder "esteira de crédito" map kanban card
-/demo-builder "requisição de RH" portal mobile
+/demo-builder "<intenção>" [template ...] [desktop|tablet|mobile]
 ```
 
-Sem template nomeado, o skill pergunta quais construir. Os modelos disponíveis vêm do servidor,
-não desta página: hoje são `map`, `kanban`, `card`, `portal`, `dashboards`, `interfaces` e
-`agents`. Alguns valem mais de uma tela, o `card` é fotografado uma vez por fase do board e o
-`agents` traz os três passos da configuração.
+A intenção é o assunto das telas, em uma frase. Sem template nomeado, o skill pergunta quais
+construir, em vez de chutar um conjunto. O dispositivo é `desktop` por padrão, 1440x960, com
+`tablet` em 834x1112 e `mobile` em 390x844.
 
+Antes de renderizar, o skill mostra um resumo do que escreveu para você confirmar ou corrigir.
 Os PNGs saem em `Demo Builder`, na sua Área de Trabalho.
+
+## Templates
+
+| Template | Tela | Screenshots |
+| --- | --- | --- |
+| `map` | Os pipes e bancos de dados da conta, e como se conectam | 1 |
+| `kanban` | O board do pipe, com suas fases e cards | 1 |
+| `card` | Um card aberto sobre o board | 1 por fase que tem card |
+| `portal` | A página onde o solicitante cai: o catálogo de serviços que ele pode pedir | 1 |
+| `dashboards` | O pipe lido em vez de trabalhado: cinco números, uma tendência, um funil e uma quebra | 1 |
+| `interfaces` | Uma interface publicada, a página que um público externo acessa | 4 |
+| `agents` | Um agente de IA sendo configurado | 3, ou 6 com o log de auditoria |
+
+Três deles valem mais de um screenshot, porque a tela sozinha não conta a história:
+
+- **`card` percorre o board.** O skill tira um screenshot por fase que tem card, como uma
+  build faz no studio: o processo e cada pergunta que ele faz no caminho. Um board de cinco
+  fases são cinco PNGs.
+- **`interfaces` são quatro layouts** da mesma página: com a foto de capa, sem ela para a tabela
+  inteira caber, com o assistente aberto por cima, e o canvas do builder onde ela é montada.
+- **`agents` são os três passos** da configuração de um agente: quem ele é (General), o que ele
+  sabe (Knowledge), o que ele faz (Behaviors).
+
+Os modelos disponíveis vêm do servidor, não desta página. Se esta tabela e o `/demo-builder`
+discordarem, o servidor está certo.
+
+### Exemplos
+
+```
+/demo-builder "empresa de blindagem de veículos"
+```
+Pergunta quais telas você quer e monta o processo de blindagem em cima delas.
+
+```
+/demo-builder "esteira de crédito" map kanban card
+```
+O mapa da conta, o board da esteira e o card em cada fase dela. É o conjunto que conta um
+processo de ponta a ponta em um slide.
+
+```
+/demo-builder "requisição de RH" portal mobile
+```
+Só o catálogo de serviços, na largura do celular.
+
+```
+/demo-builder "gestão de obras" dashboards
+```
+Uma tela, o pipe visto por quem cobra o resultado e não trabalha nele.
+
+```
+/demo-builder "onboarding de fornecedor" interfaces agents
+```
+Sete PNGs de uma vez: os quatro layouts da interface publicada e os três passos do agente que
+atende nela.
 
 ## Requisitos
 
@@ -41,23 +93,3 @@ Os PNGs saem em `Demo Builder`, na sua Área de Trabalho.
 - Uma conta no studio.
 
 O script não tem dependências: importa só os módulos do próprio Node.
-
-## Variáveis de ambiente
-
-| Variável | Para quê |
-| --- | --- |
-| `DEMO_BUILDER_BASE` | Aponta para outro servidor, por exemplo `http://localhost:3838` ao mexer no studio. |
-| `DEMO_BUILDER_TOKEN` | Substitui o arquivo de credencial, para máquina sem navegador. |
-| `DEMO_BUILDER_OUT` | Muda a pasta onde os PNGs caem. |
-| `CHROME` | Caminho do binário do navegador. |
-
-## Comandos do script
-
-O skill chama tudo sozinho, mas os comandos existem para depurar:
-
-```bash
-node skills/demo-builder/demo-builder.mjs login     # conecta a máquina
-node skills/demo-builder/demo-builder.mjs whoami    # diz qual conta está conectada
-node skills/demo-builder/demo-builder.mjs logout    # esquece o token
-node skills/demo-builder/demo-builder.mjs processo.json meu-slug
-```
