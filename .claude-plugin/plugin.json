@@ -1,0 +1,12 @@
+{
+  "name": "demo-builder",
+  "displayName": "Demo Builder",
+  "description": "Gera PNGs de telas do Pipefy a partir de uma intenção em linguagem natural, renderizados pelo Demo Builder e fotografados com Chrome headless.",
+  "version": "1.0.0",
+  "author": {
+    "name": "Pipefy Design"
+  },
+  "homepage": "https://pipe-screen-studio.vercel.app",
+  "repository": "https://github.com/pipefy-design/demo-builder",
+  "keywords": ["pipefy", "mockup", "screenshot", "demo", "design"]
+}
