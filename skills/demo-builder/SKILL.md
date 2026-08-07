@@ -27,9 +27,10 @@ Turn an intent into PNGs of Pipefy screens. You write the template data, a Demo 
   each, exactly as a build does in the studio. A five-phase board is five card PNGs, and a
   process that also has the map is six. See "The card walks the board" below.
 
-  **`agents` is three screens too**, the steps of one agent's setup: General, Knowledge,
-  Behaviors. One entry in the file, three PNGs, and six when it also carries the audit log.
-  See "The agent has three steps" below.
+  **`agents` is six screens**, one agent seen whole: the three steps of its setup (General,
+  Knowledge, Behaviors) and the three of its audit log (the runs, and one of them opened on
+  Summary and on Tracing). One entry in the file, six PNGs. It drops to three only when the
+  demo is explicitly just the setup. See "The agent is set up, and then it runs" below.
 
   **`interfaces` is four screens**, one published page drawn four ways: with its cover, without
   it, with the assistant open over it, and the builder's canvas it is assembled in. One entry in
@@ -117,14 +118,14 @@ step 4, once there is something concrete to react to.
 
    ```
    Processo completo: map, kanban, card, portal, dashboards, interfaces e agents.
-   Cerca de 16 views num arquivo só.
+   Cerca de 19 views num arquivo só.
    ```
 
    **The whole process is EVERY model the server returned.** Not a curated subset, and not the
    three or four that a demo usually opens with: whatever came back from `/api/templates` goes
    into the file, all of it, each one written with the same care as if it had been asked for
    alone. Do not narrow the set while writing the data. On seven models and a five-phase board
-   that is around 16 PNGs, counted from the models the server listed and the phases of the
+   that is around 19 PNGs, counted from the models the server listed and the phases of the
    board you are about to write.
 
    **Do not ask which models to build.** The question costs the user a decision they have no
@@ -359,16 +360,24 @@ The rest:
   An `sla` is the one to think twice about: late in every phase reads as a broken board.
 - A board of one phase is one card PNG. `--one-card` shoots only the phase in `at`.
 
-## The agent has three steps
+## The agent is set up, and then it runs
 
-An agent is set up in three pages, and the model draws all three from ONE set of data: who it is
-(General), what it knows (Knowledge), what it does (Behaviors). So the file holds one entry and
-the run comes back with three PNGs, `<slug>-agents-1-general.png` and its two siblings.
+An agent is set up in three pages: who it is (General), what it knows (Knowledge), what it does
+(Behaviors). It then runs every day, and what it did is three more pages: the log of the runs,
+and one of them opened on Summary and on Tracing. The model draws all six from ONE set of data,
+so the file holds one entry and the run comes back with six PNGs,
+`<slug>-agents-1-general.png` and its five siblings.
+
+**Write the `audit` block.** An agent is configured once and runs for months, so a demo that
+stops at the setup shows the part nobody in the room will ever look at again. Leave it out only
+when the ask is explicitly the setup itself, "como se configura um agente", a slide about the
+three steps, and say in the same line that the run is three views rather than six.
 
 ```json
 "agents": { "process": "Esteira de crédito", "name": "Analista de Crédito",
             "role": "Você é o agente ..., com experiência em ...\n\nSua responsabilidade principal é ...\n\nSuas responsabilidades incluem:\n- ...\n- ...",
-            "knowledge": [ ... ], "pipeKnowledge": [ ... ], "behaviors": [ ... ] }
+            "knowledge": [ ... ], "pipeKnowledge": [ ... ], "behaviors": [ ... ],
+            "audit": { "range": "...", "runs": [ ... ], "detail": { ... } } }
 ```
 
 - **`role` is the agent's whole instruction, and it is the field the screen is about.** Write it
@@ -380,11 +389,12 @@ the run comes back with three PNGs, `<slug>-agents-1-general.png` and its two si
   Two sentences leave the box two thirds empty, which reads as an agent nobody finished setting
   up. The field is 256px tall and CUTS what does not fit, and that is right: a real prompt runs
   past the bottom of the box. Name the artefacts, the thresholds and the people of the case, and
-  keep them agreeing with the knowledge sources and the behaviors, since the three screens are
-  one agent.
-- Do not write the entry three times, and do not set `screen` yourself. Write it once; the
-  script asks the server for each page. `"screen": "a" | "b" | "c"` in the entry is the way to
-  ask for ONE of them, e.g. only the behaviors on a slide about automation.
+  keep them agreeing with the knowledge sources and the behaviors, since the six screens are
+  one agent: what the log says it did is what this instruction told it to do.
+- Do not write the entry six times, and do not set `screen` yourself. Write it once; the
+  script asks the server for each page. `"screen": "a"` to `"f"` in the entry is the way to ask
+  for ONE of them, e.g. only the behaviors on a slide about automation, or only the tracing on
+  one about governance.
 - The three pages are one agent, so `knowledge` is what it already has and `pipeKnowledge` is
   what the pipe still offers, with nothing in both lists: the second page shows them one under
   the other, and a source in both reads as a bug.
@@ -399,10 +409,9 @@ the run comes back with three PNGs, `<slug>-agents-1-general.png` and its two si
   in the same file.
 - With the pipe in the same file, the agent belongs to it: same `process` as the kanban's name,
   same icon, and its triggers name phases that exist on that board.
-- **`audit` turns one entry into six PNGs**, and it is only for a demo about governance: the
+- **`audit` is the second half of the entry**, and it is what turns three PNGs into six: the
   log of what the agents have done, and one of those runs opened on Summary and on Tracing.
-  Leave it out for a demo about setting an agent up, or the run comes back with three screens
-  of invented history nobody asked to check. Written, it holds the period, 6 to 10 rows naming
+  It holds the period, 6 to 10 rows naming
   the OTHER agents on the pipe as well as this one, and a `detail` pointing at the row worth
   opening, with 4 to 8 tracing steps of which only the first carries its reasoning.
 
@@ -444,7 +453,9 @@ singular:
   map, kanban, card`. Never announce more views than are being built.
 - Count the card's phases in that line, since one entry in the file is several PNGs: `Gerando 6
   views: map e o card aberto nas 5 fases`. The number of phases is yours to know, you wrote the
-  board. The agent counts the same way: one entry is `3 views: o agente nas 3 etapas`.
+  board. The agent counts the same way: one entry is `6 views: o agente nas 3 etapas da
+  configuração e nas 3 do log`, or `3 views: só a configuração do agente` when the ask stops
+  at the setup.
 - With personas, say what repeats and what does not, since the count is otherwise a surprise:
   `Gerando 20 views num arquivo só: map, portal, builder e as 3 interfaces uma vez, e board,
   dashboards e o card nas 5 fases para o diretor e para o analista`.
