@@ -131,9 +131,17 @@ The other question comes later, in step 4, once there is something concrete to r
    Then ask with `AskUserQuestion`, `multiSelect: true`, so several models come back from one
    question. The tool takes at most 4 options per question, so split the models the server
    returned into chunks of 4 and ask one question per chunk, in the server's order. Offer
-   `Processo completo (map, kanban, card)` as the first option of the first question, since it
-   is the common answer and reads as zooming in: the operation, then one of its pipes, then
-   one card of that pipe. The user can also answer with numbers from the list.
+   `Processo completo` as the first option of the first question, since it is the common
+   answer. The user can also answer with numbers from the list.
+
+   **`Processo completo` is EVERY model the server returned.** Not a curated subset, and not the
+   three or four that a demo usually opens with: whatever came back from `/api/templates` goes
+   into the file, all of it, each one written with the same care as if it had been asked for
+   alone. Do not narrow the set while writing the data, and do not name a shorter one in the
+   option's label: the label is those two words, and the description says how many screens it
+   comes to, counted from the models the server listed and the phases of the board you are
+   about to write. On seven models and a five-phase board that is around 16 PNGs, and step 4 is
+   where the count is said out loud before anything is shot.
 
    With the models named in the arguments, skip this step entirely.
 
@@ -179,19 +187,21 @@ The other question comes later, in step 4, once there is something concrete to r
    phase or amount moves between two personas' boards is the error a reader catches first.
 
    **"O processo, para o diretor e o analista" is the whole process, and only some of it repeats
-   per persona.** Everything the prompt implies goes in the file: the map, the portal, the
-   interface builder, the interfaces, the board, the dashboards and the card walked phase by
+   per persona.** Everything the prompt implies goes in the file, which is the same set
+   `Processo completo` means in step 2: the map, the portal, the interface builder, the
+   interfaces, the board, the dashboards, the agent's three steps and the card walked phase by
    phase. Then:
 
    - **Per persona**: `kanban` (the cards that person sees), `card` (which card they open and
      what the detail annotates for them) and `dashboards` (the numbers that job title reads).
      These are what a persona actually changes.
-   - **Once, shared**: `map`, `portal` and `interfaces`. The
+   - **Once, shared**: `map`, `portal`, `interfaces` and `agents`. The
      portal is the requester's page, the interface is the outside audience's, the map is the
-     account. Per persona they would be the same frame twice under two names, which reads as a
-     mockup padded out rather than a demo.
+     account, and the agent is set up once for the pipe and not per job title. Per persona they
+     would be the same frame twice under two names, which reads as a mockup padded out rather
+     than a demo.
 
-   So a sales process for a diretor and an analista is about 20 screens in one file: 6 shared,
+   So a sales process for a diretor and an analista is about 23 screens in one file: 9 shared,
    and 7 each on a five-phase board (a board, a dashboard, and the card opened on each phase).
    Say that count out loud before shooting (see "Say which view you are on").
 

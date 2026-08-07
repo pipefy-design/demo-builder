@@ -1,8 +1,8 @@
 {
   "name": "demo-builder",
   "displayName": "Demo Builder",
-  "description": "Gera PNGs de telas do Pipefy a partir de uma intenção em linguagem natural, renderizados pelo Demo Builder e fotografados com Chrome headless.",
-  "version": "1.0.0",
+  "description": "Gera PNGs de telas do Pipefy a partir de uma intenção em linguagem natural, renderizados pelo Demo Builder com screenshots tirados pelo Chrome headless.",
+  "version": "1.1.0",
   "author": {
     "name": "Pipefy Design"
   },
